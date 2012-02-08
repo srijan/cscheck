@@ -8,17 +8,6 @@ from struct import *
 
 socket.setdefaulttimeout(0.1)
 
-def parsing(txt,ip):
-    global serverList
-    txt=txt.replace('\377', '')
-    if txt.find('m') == 0:
-        serv_name=txt.split('\0') [1]
-        serv_map=txt.split('\0') [2]
-        serv_engine=txt.split('\0') [3]
-        serv_game=txt.split('\0') [4]
-        print ' Server IP appended '
-        serverList.append(ip+"\t:\t"+serv_name+" -- "+serv_map)
-
 def extractInfo(txt):
     txt=txt.replace('\377', '')
     if txt.find('m') == 0:
@@ -32,12 +21,10 @@ def extractInfo(txt):
         return ''
 
 def extractChallenge(txt):
-    #print txt[5:9]
     return txt[5:9]
 
 def extractPlayers(txt):
     txt=txt.replace('\377', '')
-    #print unpack('c',txt[:4])
     return unpack('b',txt[1:2])[0]
 
 class ClientThread (threading.Thread):
