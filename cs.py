@@ -1,9 +1,10 @@
+#!/usr/bin/env python2
 import Queue
 import socket
 import threading
 from netaddr import IPNetwork
 
-socket.setdefaulttimeout(0.1)
+socket.setdefaulttimeout(0.05)
 
 def parsing(txt):
     txt=txt.replace('\377', '')
@@ -15,8 +16,6 @@ def parsing(txt):
     print '\t\tServer name:', serv_name
     print '\t\tGame:', serv_game, '('+serv_engine+')'
     print '\t\tMap:', serv_map
-
-ip='172.16.12.106' #write server ip
 
 class ClientThread (threading.Thread):
     def run (self):
@@ -33,6 +32,7 @@ class ClientThread (threading.Thread):
                 try:
                     sock.connect((ip, 27015))
                 except Exception,e:
+                    sock.close()
                     print ip, e
                     break
                 sock.send('\377\377\377\377TSource Engine Query\0')
@@ -73,14 +73,26 @@ subnetList = [
                 "172.16.17.0/24",
                 "172.16.18.0/24",
                 "172.16.19.0/24",
-                "172.16.20.0/24"
+                "172.16.20.0/24",
+                "172.17.1.0/24",
+                "172.17.2.0/24"
              ]
 ipPool = Queue.Queue(0)
 
-for subnet in subnetList:
-    for ip in IPNetwork(subnet).iter_hosts():
-        ipPool.put('%s' % ip)
 
-for x in xrange(10):
-    ClientThread().start()
+def checkIPs():
+    for subnet in subnetList:
+        for ip in IPNetwork(subnet).iter_hosts():
+            ipPool.put('%s' % ip)
 
+    for x in xrange(100):
+        ClientThread().start()
+
+checkIPs()
+while True:
+    if ipPool.empty():
+        print '--End--'
+        # write file
+        # wait 1 min
+        # redo..
+        break
