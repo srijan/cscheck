@@ -68,7 +68,18 @@ subnetList = [
                 "172.16.19.0/24",
                 "172.16.20.0/24",
                 "172.17.1.0/24",
-                "172.17.2.0/24"
+                "172.17.2.0/24",
+                "172.17.3.0/24",
+                "172.17.4.0/24",
+                "172.17.5.0/24",
+                "172.17.6.0/24",
+                "172.17.7.0/24",
+                "172.17.8.0/24",
+                "172.17.9.0/24",
+                "172.17.10.0/24",
+                "172.17.11.0/24",
+                "172.17.12.0/24",
+                "172.17.13.0/24"
              ]
 ipPool = Queue.Queue(0)
 global serverList
@@ -90,10 +101,11 @@ while True:
     checkIPs()
     serverList.append("")
     serverList.append("Last updated at: "+time.strftime('%I:%M %p, %b %d, %Y'))
+    serverList.append("Anyone interested in the code can look here: https://github.com/srijan/cscheck")
     print time.strftime('%I:%M %p, %b %d, %Y'), '-- MARK --'
     f = open(fileName, "w")
     for s in serverList:
         f.write(s)
         f.write('\n')
     f.close()
-    time.sleep(60)
+    time.sleep(50)
