@@ -1,0 +1,16 @@
+### About
+
+This is a simple script which scans the given subnets for running counter strike servers, and prints the list found.
+
+
+### Usage:
+
+Edit the variable subnetList, and run the script.
+
+### Python modules used:
+
+netaddr
+
+### Important:
+
+You might need to increase the threshold level for network devices if the number of IPs is too large.
