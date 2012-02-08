@@ -8,14 +8,14 @@ from netaddr import IPNetwork
 socket.setdefaulttimeout(0.05)
 
 def parsing(txt,ip):
+    global serverList
     txt=txt.replace('\377', '')
     if txt.find('m') == 0:
         serv_name=txt.split('\0') [1]
         serv_map=txt.split('\0') [2]
         serv_engine=txt.split('\0') [3]
         serv_game=txt.split('\0') [4]
-    global serverList
-    serverList.append(ip+"\t:\t"+serv_name+" -- "+serv_map)
+        serverList.append(ip+"\t:\t"+serv_name+" -- "+serv_map)
 
 class ClientThread (threading.Thread):
     def run (self):
