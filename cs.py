@@ -149,7 +149,7 @@ def checkIPs():
             ipPool.put('%s' % ip)
     for x in xrange(100):
         ClientThread().start()
-    while threading.activeCount() > 1:
+    while threading.activeCount() > 2:
         time.sleep(1)
 
 while True:

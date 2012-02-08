@@ -14,3 +14,17 @@ netaddr
 ### Important:
 
 You might need to increase the threshold level for network devices if the number of IPs is too large.
+
+I had to use the following values:
+
+net.ipv4.neigh.default.gc_thresh1 = 4096
+
+net.ipv4.neigh.default.gc_thresh2 = 8192
+
+net.ipv4.neigh.default.gc_thresh3 = 16384
+
+
+### Resources:
+
+Python Sockets: http://docs.python.org/library/socket.html
+CS Server Commands: https://developer.valvesoftware.com/wiki/Server_Queries
