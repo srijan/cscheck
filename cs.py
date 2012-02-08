@@ -6,7 +6,7 @@ import time
 from netaddr import IPNetwork
 from struct import *
 
-socket.setdefaulttimeout(0.1)
+socket.setdefaulttimeout(0.05)
 
 def extractInfo(txt):
     txt=txt.replace('\377', '')
@@ -15,17 +15,12 @@ def extractInfo(txt):
         serv_map=txt.split('\0') [2]
         serv_engine=txt.split('\0') [3]
         serv_game=txt.split('\0') [4]
+        players = unpack('bb',txt.split('\0')[5][:2])
+        protected = unpack('?',txt.split('\0')[9][:1])[0]
         print ' Server IP appended '
-        return serv_name+" -- "+serv_map
+        return serv_name+" -- "+serv_map+" ("+str(players[0])+"/"+str(players[1])+" players) (Password Protected: "+str(protected)+")"
     else:
         return ''
-
-def extractChallenge(txt):
-    return txt[5:9]
-
-def extractPlayers(txt):
-    txt=txt.replace('\377', '')
-    return unpack('b',txt[1:2])[0]
 
 class ClientThread (threading.Thread):
     def run (self):
@@ -65,25 +60,6 @@ class ClientThread (threading.Thread):
                         found = False
                         break
                 if found:
-                    sock.send('\377\377\377\377W')
-                    while 1:
-                        try:
-                            text=sock.recv(1024)
-                        except Exception,e:
-                            break
-                        if not text:
-                            break
-                        challenge=extractChallenge(text)
-                    if challenge != '':
-                        sock.send('\377\377\377\377U'+challenge)
-                        while 1:
-                            try:
-                                text=sock.recv(1024)
-                            except Exception,e:
-                                break
-                            if not text:
-                                break
-                            serverLine+=" ("+str(extractPlayers(text))+" players)"
                     serverList.append(serverLine)
                 sock.shutdown(socket.SHUT_RDWR)
                 sock.close()
@@ -136,7 +112,7 @@ def checkIPs():
             ipPool.put('%s' % ip)
     for x in xrange(100):
         ClientThread().start()
-    while threading.activeCount() > 2:
+    while threading.activeCount() > 1:
         time.sleep(1)
 
 while True:
