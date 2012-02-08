@@ -4,8 +4,9 @@ import socket
 import threading
 import time
 from netaddr import IPNetwork
+from struct import *
 
-socket.setdefaulttimeout(0.05)
+socket.setdefaulttimeout(0.1)
 
 def parsing(txt,ip):
     global serverList
@@ -15,18 +16,45 @@ def parsing(txt,ip):
         serv_map=txt.split('\0') [2]
         serv_engine=txt.split('\0') [3]
         serv_game=txt.split('\0') [4]
+        print ' Server IP appended '
         serverList.append(ip+"\t:\t"+serv_name+" -- "+serv_map)
+
+def extractInfo(txt):
+    txt=txt.replace('\377', '')
+    if txt.find('m') == 0:
+        serv_name=txt.split('\0') [1]
+        serv_map=txt.split('\0') [2]
+        serv_engine=txt.split('\0') [3]
+        serv_game=txt.split('\0') [4]
+        print ' Server IP appended '
+        return serv_name+" -- "+serv_map
+    else:
+        return ''
+
+def extractChallenge(txt):
+    #print txt[5:9]
+    return txt[5:9]
+
+def extractPlayers(txt):
+    txt=txt.replace('\377', '')
+    #print unpack('c',txt[:4])
+    return unpack('b',txt[1:2])[0]
 
 class ClientThread (threading.Thread):
     def run (self):
+        global serverList
         ip = None
         while True:
-            if ipPool.qsize() > 0:
+            if not ipPool.empty():
                 ip = ipPool.get()
             else:
                 break
             if ip != None:
+                found = False
+                serverLine = ''+ip+'\t:\t'
+                challenge = ''
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
                 try:
                     sock.connect((ip, 27015))
                 except Exception,e:
@@ -37,12 +65,39 @@ class ClientThread (threading.Thread):
                 while 1:
                     try:
                         text=sock.recv(1024)
+                        print ' Message Received from '+ip
                     except Exception,e:
                         break
-                    text=parsing(text,ip)
                     if not text:
                         break
-                    print '[GET]', text
+                    found = True
+                    info = extractInfo(text)
+                    if info != '':
+                        serverLine += info
+                    else:
+                        found = False
+                        break
+                if found:
+                    sock.send('\377\377\377\377W')
+                    while 1:
+                        try:
+                            text=sock.recv(1024)
+                        except Exception,e:
+                            break
+                        if not text:
+                            break
+                        challenge=extractChallenge(text)
+                    if challenge != '':
+                        sock.send('\377\377\377\377U'+challenge)
+                        while 1:
+                            try:
+                                text=sock.recv(1024)
+                            except Exception,e:
+                                break
+                            if not text:
+                                break
+                            serverLine+=" ("+str(extractPlayers(text))+" players)"
+                    serverList.append(serverLine)
                 sock.shutdown(socket.SHUT_RDWR)
                 sock.close()
 
@@ -92,7 +147,7 @@ def checkIPs():
     for subnet in subnetList:
         for ip in IPNetwork(subnet).iter_hosts():
             ipPool.put('%s' % ip)
-    for x in xrange(50):
+    for x in xrange(100):
         ClientThread().start()
     while threading.activeCount() > 1:
         time.sleep(1)
