@@ -16,9 +16,12 @@ def extractInfo(txt):
         serv_engine=txt.split('\0') [3]
         serv_game=txt.split('\0') [4]
         players = unpack('bb',txt.split('\0')[5][:2])
-        protected = unpack('?',txt.split('\0')[9][:1])[0]
+        #if txt.split('\0')[9][:1] == '\0':
+        #    protected = True
+        #else:
+        #    protected = False
         print ' Server IP appended '
-        return serv_name+" -- "+serv_map+" ("+str(players[0])+"/"+str(players[1])+" players) (Password Protected: "+str(protected)+")"
+        return serv_name+" -- "+serv_map+" ("+str(players[0])+"/"+str(players[1])+" players)"
     else:
         return ''
 
@@ -28,13 +31,15 @@ class ClientThread (threading.Thread):
         ip = None
         while True:
             if not ipPool.empty():
-                ip = ipPool.get()
+                try:
+                    ip = ipPool.get_nowait()
+                except Exception,e:
+                    break
             else:
                 break
             if ip != None:
                 found = False
                 serverLine = ''+ip+'\t:\t'
-                challenge = ''
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
                 try:
@@ -56,6 +61,7 @@ class ClientThread (threading.Thread):
                     info = extractInfo(text)
                     if info != '':
                         serverLine += info
+                        break
                     else:
                         found = False
                         break
