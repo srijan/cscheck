@@ -93,16 +93,16 @@ def checkIPs():
         time.sleep(1)
 
 while True:
-	checkIPs()
-	serverList.append("")
-	serverList.append("Last updated at: "+time.strftime('%I:%M %p, %b %d, %Y'))
-	serverList.append("Anyone interested in the code can look here: https://github.com/srijan/cscheck or https://github.com/vaibhav-y/cscheck")
-	serverList.append("Fork this project: https://github.com/srijan/cscheck/fork")
-	serverList.append("Contributors: https://github.com/srijan/cscheck/graphs/contributors")
-	print time.strftime('%I:%M %p, %b %d, %Y'), '-- MARK --'
-	f = open(fileName, "w")
-	for s in serverList:
-		f.write(s)
-		f.write('\n')
-	f.close()
-	time.sleep(50)
+    checkIPs()
+    serverList.append("")
+    serverList.append("Last updated at: "+time.strftime('%I:%M %p, %b %d, %Y'))
+    serverList.append("Anyone interested in the code can look here: https://github.com/srijan/cscheck or https://github.com/vaibhav-y/cscheck")
+    serverList.append("Fork this project: https://github.com/srijan/cscheck/fork")
+    serverList.append("Contributors: https://github.com/srijan/cscheck/graphs/contributors")
+    print time.strftime('%I:%M %p, %b %d, %Y'), '-- MARK --'
+    f = open(fileName, "w")
+    for s in serverList:
+        f.write(s)
+        f.write('\n')
+    f.close()
+    time.sleep(50)
