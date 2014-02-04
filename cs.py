@@ -6,6 +6,8 @@ import time
 from netaddr import IPNetwork
 from struct import *
 
+THREAD_COUNT = 100
+
 socket.setdefaulttimeout(0.05)
 
 def extractInfo(txt):
@@ -85,7 +87,7 @@ def checkIPs():
     for subnet in subnetList:
         for ip in IPNetwork(subnet).iter_hosts():
             ipPool.put('%s' % ip)
-    for x in xrange(100):
+    for x in xrange(THREAD_COUNT):
         ClientThread().start()
     while threading.activeCount() > 1:
         time.sleep(1)
@@ -94,7 +96,7 @@ while True:
 	checkIPs()
 	serverList.append("")
 	serverList.append("Last updated at: "+time.strftime('%I:%M %p, %b %d, %Y'))
-	serverList.append("Anyone interested in the code can look here: https://github.com/srijan/cscheck")
+	serverList.append("Anyone interested in the code can look here: https://github.com/srijan/cscheck or https://github.com/vaibhav-y/cscheck")
 	serverList.append("Fork this project: https://github.com/srijan/cscheck/fork")
 	serverList.append("Contributors: https://github.com/srijan/cscheck/graphs/contributors")
 	print time.strftime('%I:%M %p, %b %d, %Y'), '-- MARK --'
